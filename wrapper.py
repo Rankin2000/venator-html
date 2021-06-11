@@ -3,6 +3,7 @@ import sys
 import json
 import argparse
 import os
+from datetime import datetime
 from dominate.tags import *
 
 parser = argparse.ArgumentParser()
@@ -102,9 +103,25 @@ def output(data):
         link(rel='stylesheet', href='style.css')
 
     with doc:
-        with div(id='sidebar').add(ul()):
-            for name in items:
-                li(a(tidyitem(name), href="#" + name))
+        h1("Venator Report")
+        today = datetime.now()
+        h3("Generated on " + today.strftime("%a, %d %b %Y at %H:%M:%S"), cls="right-header")
+        with div(id='sidebar'):
+            h3("Summary", cls="left-header")
+            #for name in items:
+
+            with table():
+                with thead():
+                    with tr():
+                        th("Module")
+                        th("Number of Items")
+                with tbody():
+                    for item in items:
+                        with tr():
+                            td(a(tidyitem(item), href="#" + item))
+                            td(len(data[item]))
+
+
 
         with div(id='main'):
             for name in items:
@@ -124,7 +141,21 @@ def output(data):
                                         for x in item:
                                             with tr():
                                                 th(tidyitem(x))
-                                                td(item[x])
+                                            #if type(item[x]) is dict:
+                                            #    td(str(item[x][y]))
+                                            #else:
+                                                if x == "zsh_commands":
+                                                    cmds = item[x].split("\n")
+                                                    with td():
+                                                        with ul():
+                                                            for cmd in cmds:
+                                                                li(cmd)
+
+                                                elif item[x]:
+
+                                                    td(str(item[x]))
+                                                else:
+                                                    td("N/A")
                                     elif type(data[name][item]) is list:
                                         with tr():
                                             th(tidyitem(item))
@@ -137,12 +168,17 @@ def output(data):
                                         with tr():
                                             th(tidyitem(item))
                                             if type(data[name][item]) is dict:
-                                                for i in data[name][item]:
-                                                    td(i + ": " + data[name][item][i] + "\n")
+                                                with td():
+                                                    with ul():
+                                                        for i in data[name][item]:
+
+                                                            li(i + ": " + data[name][item][i])
                                             else:
                                                 td(data[name][item])
 
 
+                                    with tr(cls="break"):
+                                        th(colspan=2)
     with open("test.html","w") as f:
         f.write(doc.render())
 
@@ -156,6 +192,7 @@ os.chdir(sys.path[0])
 
 if os.path.isfile("baseline.json"):
 
+    #NEEDS TO RUN WHEN TESTING
     #os.system("sudo venator -o venator.json")
 
 
@@ -166,5 +203,5 @@ else:
     if args.generatebaseline:
         baseline()
     else:
-        print("Please generate a baseline first using the flag ")
+        print("Please generate a baseline first using the -g flag ")
 

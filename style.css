@@ -2,15 +2,45 @@
     font-family: "Arial";
     margin:0;
 }
+h1 {
+    text-align: center;
+}
+thead {
+
+    background-color:#36a9e1;
+    color: white;
+}
+table {
+    background-color:#c6c6c6;
+}
+td, th {
+    word-break: break-word;
+}
+
+.left-header {
+    display: inline-block;
+}
+
+.right-header{
+    float: right;
+}
+
 #sidebar {
-    top: 0;
     width:25%;
     height: 100%;
-    position:fixed;
-    z-index:1;
+    left: 0;
+    position: fixed;
+    z-index: 1;
     overflow:auto;
+    overflow-x: hidden;
 }
 
 #main {
+    position: relative;
+    width: auto;
     margin-left:25%;
+}
+
+.break {
+    background-color: white;
 }
