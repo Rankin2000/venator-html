@@ -45,7 +45,17 @@ def filter(data):
                             data[module].remove(item)
 
                     elif type(item[x]) is str:
-                        if "vmware" in item[x]:
+                        if x == "CFBundleIdentifier":
+                            if item[x] in str(baseline[module]):
+                                data[module].remove(item)
+                        elif x == "appHash":
+
+                            if item[x]:
+                                if item[x] in str(baseline[module]) :
+                                    print(item[x])
+                                    data[module].remove(item)
+
+                        elif "vmware" in item[x]:
                             try:
                                 print("Filtered VMWare from " + module)
             #                    print(x + " - " + item[x])
@@ -62,7 +72,16 @@ def filter(data):
                             print("Filtered item from " + module)
                             data[module].remove(item)
                     else:
-                        if "vmware" in str(item[x]):
+                        if x == "package_identifiers":
+                            for identifier in item[x]:
+                                if identifier in str(baseline[module]):
+                                    try:
+                                        data[module].remove(item)
+                                    except:
+                                        print("Failed to remove item. May have already been removed")
+                                    pass
+
+                        elif "vmware" in str(item[x]):
                             print("Filtered VMWare from " + module)
                             data[module].remove(item)
         elif type(data[module]) is dict:
