@@ -33,57 +33,48 @@ def filter(data):
 
     filtered = data
 
-    with open("venator.json", "rb") as f:
+    with open("baseline.json", "rb") as f:
 	    baseline = json.load(f)
 
     for module in data:
-        for item in reversed(data[module]):
-            if type(item) is dict:
-                for x in reversed(item):
+        if type(data[module]) is list:
+            for item in data[module][:]:
+                for x in item:
                     if x == "crontab":
                         if item[x].startswith("crontab: no crontab for"):
                             data[module].remove(item)
 
-                    if type(item[x]) is str:
+                    elif type(item[x]) is str:
                         if "vmware" in item[x]:
-                            print("Filtered VMWare from " + module)
-
                             try:
+                                print("Filtered VMWare from " + module)
+            #                    print(x + " - " + item[x])
                                 data[module].remove(item)
                             except:
+                                print("Failed to remove item. May have already been removed")
+                                print(x + " - " + item[x])
                                 pass
                     elif x == "id":
+                        ids = []
                         for baselineitem in baseline[module]:
-                            #print(baselineitem["id"])
-                            pass
+                            ids.append(baselineitem["id"])
+                        if item[x] in ids:
+                            print("Filtered item from " + module)
+                            data[module].remove(item)
                     else:
-                        for item in data[module]:
-                            for key in item:
-                                if "vmware" in str(item[key]):
-                                    print("Filtered VMWare from " + module)
-                                    data[module].remove(item)
-                                if type(item[key]) is dict:
-                                    for nextkey in item[key]:
-                                        if "vmware" in str(item[key][nextkey]):
-                                            print("Filtered VMWare from " + module)
-                                            data[module].remove(item)
-                                #else:
+                        if "vmware" in str(item[x]):
+                            print("Filtered VMWare from " + module)
+                            data[module].remove(item)
+        elif type(data[module]) is dict:
+            #SIP
+            #Variable
+            #System Info
+            #gatekeeper
+            #Periodic Script
+            pass
+        else:
 
-                                #    pass
-                                    #print(str(key) + ": " + str(item[key]))
-
-            elif type(item) is str:
-                #periodic scripts
-                #gatekeeper
-                #system_info
-                #environemnt_variables
-                #system protection
-
-                continue
-                #print(module + " is a " + str(type(module)) + " and wasn't filtered")
-                #print(type(data[module]))
-            else:
-                print("pass")
+            print("DIDNT DO" + str(type(data[module])))
     return data
 
 
