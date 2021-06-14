@@ -152,6 +152,7 @@ def output(data):
                         with tbody():
                             with tr():
                                 for item in data[name]:
+                                    print(name)
                                     if type(item) is dict:
                                         for x in item:
                                             with tr():
@@ -232,6 +233,23 @@ if os.path.isfile("baseline.json"):
 
     with open("venator.json", "rb") as f:
 	    data = json.load(f)
+
+    users = os.listdir("/Users")
+
+    userLaunchAgents = []
+    for user in users:
+        try:
+            tmpAgent = os.listdir("/Users/" + user + "/Library/LaunchAgents")
+            agents = []
+            for agent in tmpAgent:
+                agents.append({"user": user, "agent": agent})
+
+            userLaunchAgents.extend(agents)
+        except:
+            pass
+
+    data["launch_agents"].extend(userLaunchAgents)
+
     if args.filter:
         output(filter(data))
     else:
