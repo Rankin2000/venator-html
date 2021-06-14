@@ -8,7 +8,7 @@ from dominate.tags import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-g", "--generatebaseline", help="generates a baseline to filter", action="store_true")
-
+parser.add_argument("-f", "--filter", help="enables the filter to hide items present in the baseline", action="store_true")
 args = parser.parse_args()
 
 
@@ -36,6 +36,13 @@ def filter(data):
     with open("baseline.json", "rb") as f:
 	    baseline = json.load(f)
 
+
+    #os.system("diff baseline.txt venator.txt | grep '>' | egrep -v 'Spotlight|DocumentRevisions|PKInstallSandboxManager|HFS+|fseventsd|TemporaryItems|Library/Logs/DiagnosticReports|Library/Updates|.Trashes|.bash_sessions|Containers/com.apple.Safari|vmware|ActivityMonitor|DiskUtility|Terminal|/Volumes/VMware Shared Folders|/Volumes/macOS SSD|dslocal|systemstats|dyld|Hyper|MacPorts|OceanLotus.H|TaskExplorer_2.0.2.zip|Venator-master.zip|_CCC SafetyNet|analysis_machine_10.14.4|ccc-5.1|Saved Application State|starttor|uuidtext|/private/var/log|/private/var/run/|private/var/db|/dev/|/usr/libexec/firmwarecheckers/eficheck|venator_output|/Volumes/Storage/' | cut -c 4- >> diff.txt")
+
+    #Previous command creates multiple lists for some reason
+    os.system("diff baseline.txt venator.txt | grep '>' >> diff.txt")
+
+
     for module in data:
         if type(data[module]) is list:
             for item in data[module][:]:
@@ -49,10 +56,8 @@ def filter(data):
                             if item[x] in str(baseline[module]):
                                 data[module].remove(item)
                         elif x == "appHash":
-
                             if item[x]:
                                 if item[x] in str(baseline[module]) :
-                                    print(item[x])
                                     data[module].remove(item)
 
                         elif "vmware" in item[x]:
@@ -189,12 +194,30 @@ def output(data):
 
                                     with tr(cls="break"):
                                         th(colspan=2)
+
+            h2("Files Dropped")
+            files = []
+            if args.filter:
+                with open("diff.txt", "r") as f:
+                    files = f.read().splitlines()
+            else:
+                with open("venator.txt", "r") as f:
+                    files = f.read().splitlines()
+            print(files)
+
+            with ul():
+                for f in files:
+                    if f:
+                        li(f)
+
     with open("test.html","w") as f:
         f.write(doc.render())
 
 
 def baseline():
     print("Generating baseline...")
+    os.system("find / | sort > baseline.txt")
+
     os.system("sudo venator -o baseline.json")
 
 
@@ -205,10 +228,14 @@ if os.path.isfile("baseline.json"):
     #NEEDS TO RUN WHEN TESTING
     #os.system("sudo venator -o venator.json")
 
+    os.system("find / | sort > venator.txt")
 
     with open("venator.json", "rb") as f:
 	    data = json.load(f)
-    output(filter(data))
+    if args.filter:
+        output(filter(data))
+    else:
+        output(data)
 else:
     if args.generatebaseline:
         baseline()
