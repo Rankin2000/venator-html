@@ -226,7 +226,7 @@ os.chdir(sys.path[0])
 if os.path.isfile("baseline.json"):
 
     #NEEDS TO RUN WHEN TESTING
-    #os.system("sudo venator -o venator.json")
+    os.system("sudo venator -o venator.json")
 
     os.system("find / | sort > venator.txt")
 
@@ -234,19 +234,19 @@ if os.path.isfile("baseline.json"):
 	    data = json.load(f)
 
     users = os.listdir("/Users")
-
     userLaunchAgents = []
     for user in users:
         try:
             tmpAgent = os.listdir("/Users/" + user + "/Library/LaunchAgents")
+            print(tmpAgent)
             agents = []
             for agent in tmpAgent:
-                with ("/Users/" + user + "/Library/LaunchAgents" + agent, "rb") as f:
+                with open("/Users/" + user + "/Library/LaunchAgents/" + agent, "rb") as f:
                     pl = plistlib.load(f)
                 try:
-                    agents.append({"hostname": data["system_info"]["hostnam,e"], "uuid": data["system_info"]["uuid"], "runAtLoad": str(bool(pl["RunAtLoad"])), "label": pl["Label"], "programExecutable": pl["ProgramExecutable"], "user": user,  "agent": agent})
+                    agents.append({"hostname": data["system_info"]["hostname"], "uuid": data["system_info"]["uuid"], "runAtLoad": str(bool(pl["RunAtLoad"])), "label": pl["Label"], "programExecutable": pl["Program"], "user": user,  "agent": agent})
                 except:
-                    agents.append({"hostname": data["system_info"]["hostnam,e"], "uuid": data["system_info"]["uuid"], "label": pl["Label"], "programExecutable": pl["ProgramExecutable"], "user": user,  "agent": agent})
+                    agents.append({"hostname": data["system_info"]["hostname"], "uuid": data["system_info"]["uuid"], "label": pl["Label"], "programExecutable": pl["Program"], "user": user,  "agent": agent})
 
             userLaunchAgents.extend(agents)
         except:
