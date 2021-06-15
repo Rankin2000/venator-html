@@ -3,6 +3,7 @@ import sys
 import json
 import argparse
 import os
+import plistlib
 from datetime import datetime
 from dominate.tags import *
 
@@ -152,7 +153,6 @@ def output(data):
                         with tbody():
                             with tr():
                                 for item in data[name]:
-                                    print(name)
                                     if type(item) is dict:
                                         for x in item:
                                             with tr():
@@ -204,7 +204,6 @@ def output(data):
             else:
                 with open("venator.txt", "r") as f:
                     files = f.read().splitlines()
-            print(files)
 
             with ul():
                 for f in files:
@@ -242,7 +241,12 @@ if os.path.isfile("baseline.json"):
             tmpAgent = os.listdir("/Users/" + user + "/Library/LaunchAgents")
             agents = []
             for agent in tmpAgent:
-                agents.append({"user": user, "agent": agent})
+                with ("/Users/" + user + "/Library/LaunchAgents" + agent, "rb") as f:
+                    pl = plistlib.load(f)
+                try:
+                    agents.append({"hostname": data["system_info"]["hostnam,e"], "uuid": data["system_info"]["uuid"], "runAtLoad": str(bool(pl["RunAtLoad"])), "label": pl["Label"], "programExecutable": pl["ProgramExecutable"], "user": user,  "agent": agent})
+                except:
+                    agents.append({"hostname": data["system_info"]["hostnam,e"], "uuid": data["system_info"]["uuid"], "label": pl["Label"], "programExecutable": pl["ProgramExecutable"], "user": user,  "agent": agent})
 
             userLaunchAgents.extend(agents)
         except:
