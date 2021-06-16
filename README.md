@@ -5,6 +5,17 @@
 - [Dominate](https://pypi.org/project/dominate/)
 
 ## Usage
-1. (Optional for filter) Generate a baseline `python3 venator-html.py -g`
-2. Run script (Optionally with filter enabled '-f') `python3 venator-html.py`
-3. Report can then be found in the same directory as 'venator.html'
+The tool is simple to use. 
+The recommended use is as follows:
+1. Set up a virtual machine with analysis tools required and prior to taking a snapshot generate a baseline using the command: `python3 venator-html.py -g`
+
+
+  *The baseline is optional, but is required for the filter flag (-f).*
+
+2. Run the sample on the VM,
+3. The tool can generate a report by using the command: `python3 venator-html.py -f`
+
+  *The optional filter flag attempts to reduce the output of the report by comparing the venator result with the baseline.*
+  
+The HTML report can be found under "venator.html"
+
