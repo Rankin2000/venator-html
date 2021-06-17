@@ -324,10 +324,10 @@ if args.generatebaseline:
     baseline()
 else:
     #Gets files on system
-    #os.system("find / | sort > venator.txt")
+    os.system("find / | sort > venator.txt")
 
     #Runs venator
-    #os.system("sudo venator -o venator.json")
+    os.system("sudo venator -o venator.json")
 
 
     #Gets venator json
