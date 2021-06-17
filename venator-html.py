@@ -62,13 +62,14 @@ def filter(data):
                                 if item[x] in str(baseline[module]) :
                                     data[module].remove(item)
                         #If vmware in item remove
-                        elif "vmware" in item[x]:
+                        elif "vmware" in item[x] or "wireshark" in item[x]:
                             try:
-                                print("Filtered VMWare from " + module)
+                                print("Filtered from " + module)
                                 data[module].remove(item)
                             except:
                                 print("Failed to remove item. May have already been removed")
                                 print(x + " - " + item[x])
+
                     elif x == "id":
                         ids = []
                         #Gets all IDs from baseline
@@ -79,18 +80,19 @@ def filter(data):
                             print("Filtered item from " + module)
                             data[module].remove(item)
                     else:
+                        #If vmware in item remove it
+                        if "vmware" in str(item[x]) or "wireshark" in str(item[x]):
+                            print("Filtered VMWare from " + module)
+                            data[module].remove(item)
                         #If package_identifer already in baseline remove
-                        if x == "package_identifiers":
+                        elif x == "package_identifiers":
                             for identifier in item[x]:
                                 if identifier in str(baseline[module]):
                                     try:
                                         data[module].remove(item)
                                     except:
                                         print("Failed to remove item. May have already been removed")
-                        #If vmware in item remove it
-                        elif "vmware" in str(item[x]):
-                            print("Filtered VMWare from " + module)
-                            data[module].remove(item)
+
         elif type(data[module]) is dict:
             #If dict it covers these modules
             #Don't need to be filtered but can be in future
@@ -114,7 +116,56 @@ def output(data):
 
     #Adds stylesheet link
     with doc.head:
-        link(rel='stylesheet', href='style.css')
+        style("""
+                * {
+                    font-family: "Arial";
+                    margin:0;
+                }
+
+                h1 {
+                    text-align: center;
+                }
+
+                thead {
+
+                    background-color:#36a9e1;
+                    color: white;
+                }
+                table {
+                    background-color:#c6c6c6;
+                }
+                td, th {
+                    word-break: break-word;
+                }
+
+                .left-header {
+                    display: inline-block;
+                }
+
+                .right-header{
+                    float: right;
+                }
+
+                #sidebar {
+                    width: 25%;
+                    height: 100%;
+                    left: 0;
+                    position: fixed;
+                    z-index: 1;
+                    overflow: auto;
+                    overflox-x: hidden;
+                }
+
+                #main {
+                    position: relative;
+                    width: auto;
+                    margin-left:25%;
+                }
+
+                .break {
+                    background-color: white;
+                }
+              """)
 
     #Document Content
     with doc:
@@ -273,9 +324,10 @@ if args.generatebaseline:
     baseline()
 else:
     #Gets files on system
-    os.system("find / | sort > venator.txt")
+    #os.system("find / | sort > venator.txt")
+
     #Runs venator
-    os.system("sudo venator -o venator.json")
+    #os.system("sudo venator -o venator.json")
 
 
     #Gets venator json
