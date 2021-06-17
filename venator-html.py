@@ -352,10 +352,24 @@ else:
 
                 try:
                     #Append dict in similar format to venator
-                    agents.append({"hostname": data["system_info"]["hostname"], "uuid": data["system_info"]["uuid"], "runAtLoad": str(bool(pl["RunAtLoad"])), "label": pl["Label"], "programExecutable": pl["Program"], "user": user,  "agent": agent})
+                    tmp = {"hostname": data["system_info"]["hostname"], "uuid": data["system_info"]["uuid"]}
+
+                    if "RunAtLoad" in pl:
+                            tmp["runAtLoad"] = str(bool(pl["RunAtLoad"]))
+                    if "Label" in pl:
+                            tmp["label"] = pl["Label"]
+                    if "Program" in pl:
+                            tmp["programExecutable"] = pl["Program"]
+                    if "Program" in pl:
+                            tmp["programExecutable"] = pl["Program"]
+                    if "ProgramArguments" in pl:
+                            tmp["programArguments"] = pl["ProgramArguments"]
+
+                    tmp["user"] = user
+
+                    agents.append(tmp)
                 except:
-                    #Some plist files did not have "runatload" so add without
-                    agents.append({"hostname": data["system_info"]["hostname"], "uuid": data["system_info"]["uuid"], "label": pl["Label"], "programExecutable": pl["Program"], "user": user,  "agent": agent})
+                    raise
 
             userLaunchAgents.extend(agents)
         except:
